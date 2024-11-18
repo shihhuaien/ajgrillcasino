@@ -1,5 +1,3 @@
-import fetch from 'node-fetch'; // 發送 HTTP 請求
-
 export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { username, password } = req.body;
@@ -23,24 +21,31 @@ export default async function handler(req, res) {
         });
 
         if (!userAuthResponse.ok) {
+          console.error(
+            `Failed to authenticate with Evolution system: ${userAuthResponse.statusText}`
+          );
           throw new Error('Failed to authenticate with Evolution system');
         }
 
         const userAuthData = await userAuthResponse.json();
 
-        // 驗證成功後返回 sid
+        // 驗證成功後返回 sid 和額外的資訊
         return res.status(200).json({
           success: true,
-          sid: 'session12345',
-          authToken: 'authTokenExample123',
+          sid: sid,
+          authToken: userAuthData.authToken || 'authTokenExample123',
         });
       } catch (error) {
-        console.error('Error during User Authentication:', error);
-        return res.status(500).json({ success: false, message: 'Internal Server Error' });
+        console.error('Error during User Authentication:', error.message);
+        return res
+          .status(500)
+          .json({ success: false, message: 'Internal Server Error' });
       }
     }
 
-    return res.status(401).json({ success: false, message: 'Invalid credentials' });
+    return res
+      .status(401)
+      .json({ success: false, message: 'Invalid credentials' });
   }
 
   res.setHeader('Allow', ['POST']);
