@@ -31,8 +31,8 @@ export default async function handler(req, res) {
         // 驗證成功後返回 sid
         return res.status(200).json({
           success: true,
-          sid: sid,
-          authToken: userAuthData.authToken,
+          sid: 'session12345',
+          authToken: 'authTokenExample123',
         });
       } catch (error) {
         console.error('Error during User Authentication:', error);

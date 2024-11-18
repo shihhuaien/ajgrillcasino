@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -33,7 +33,6 @@ const Login = () => {
   const handleLogin = async () => {
     if (validateForm()) {
       try {
-        // 向 One Wallet API 發送登入請求
         const res = await fetch('/api/login', {
           method: 'POST',
           headers: {
@@ -44,16 +43,21 @@ const Login = () => {
             password: password,
           }),
         });
-
+  
+        if (!res.ok) {
+          console.error('Response not OK:', res.status, res.statusText);
+          alert('Login failed. Please try again.');
+          return;
+        }
+  
         const data = await res.json();
-
+  
         if (data.success) {
-          // 將 sid 和其他需要的資訊儲存到 sessionStorage
           sessionStorage.setItem('sid', data.sid);
           if (data.authToken) {
-            sessionStorage.setItem('authToken', data.authToken); // 儲存 authToken (若有)
+            sessionStorage.setItem('authToken', data.authToken);
           }
-          router.push('/dashboard'); // 導到 /dashboard 頁面
+          router.push('/dashboard');
         } else {
           alert(data.message || 'Login failed');
         }
