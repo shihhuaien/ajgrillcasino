@@ -2,29 +2,17 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { username, password } = req.body;
 
-    // 調試程式碼：檢查環境變數是否載入
-    console.log('EVOLUTION_USER_AUTH_URL:', process.env.EVOLUTION_USER_AUTH_URL);
-    console.log('EVOLUTION_API_TOKEN:', process.env.EVOLUTION_API_TOKEN);
-
-    // 檢查環境變數是否存在，避免 undefined 問題
-    if (!process.env.EVOLUTION_USER_AUTH_URL || !process.env.EVOLUTION_API_TOKEN) {
-      console.error('環境變數未正確載入');
-      return res
-        .status(500)
-        .json({ success: false, message: 'Server configuration error: Missing environment variables' });
-    }
-
     // 假設用戶驗證邏輯
     if (username === 'testuser' && password === 'password123') {
       const sid = 'session12345';
 
       try {
         // 向 Evolution 系統發送 User Authentication 請求
-        const userAuthResponse = await fetch(process.env.EVOLUTION_USER_AUTH_URL, {
+        const userAuthResponse = await fetch("https://diyow6.uat1.evo-test.com/ua/v1/diyow60000000001/test123", {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${process.env.EVOLUTION_API_TOKEN}`,
+            'Authorization': `Bearer ${"test123"}`,
           },
           body: JSON.stringify({
             sid: sid,
