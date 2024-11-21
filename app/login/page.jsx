@@ -57,7 +57,7 @@ const Login = () => {
           if (data.authToken) {
             sessionStorage.setItem("authToken", data.authToken);
           }
-          router.push(data.authToken);
+          router.push(`https://diyow6.uat1.evo-test.com${data.authToken}`);
         } else {
           alert(data.message || "Login failed");
         }
