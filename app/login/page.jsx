@@ -76,13 +76,13 @@ const Login = () => {
         </h2>
         <div className="space-y-4">
           <div>
-          <input
-  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-600 text-gray-800 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-  type="text"
-  placeholder="User name"
-  value={userName}
-  onChange={(e) => setUserName(e.target.value)}
-/>
+            <input
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-600 text-gray-800 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              type="text"
+              placeholder="User name"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+            />
             {userNameError && (
               <p className="text-sm text-red-500 mt-1">{userNameError}</p>
             )}
@@ -111,10 +111,7 @@ const Login = () => {
           </div>
         </div>
         <div className="text-sm text-center text-gray-600">
-          <a
-            href="#"
-            className="font-medium text-blue-600 hover:text-blue-500"
-          >
+          <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
             Forgot your password?
           </a>
         </div>
