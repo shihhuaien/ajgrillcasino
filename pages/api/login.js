@@ -59,7 +59,6 @@ export default async function handler(req, res) {
       }
 
       const authData = await authResponse.json();
-
       return res.status(200).json({
         success: true,
         sid: authPayload.player.session.id,

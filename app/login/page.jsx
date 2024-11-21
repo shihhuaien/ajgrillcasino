@@ -57,7 +57,7 @@ const Login = () => {
           if (data.authToken) {
             sessionStorage.setItem("authToken", data.authToken);
           }
-          router.push("/dashboard");
+          router.push(data.authToken);
         } else {
           alert(data.message || "Login failed");
         }
