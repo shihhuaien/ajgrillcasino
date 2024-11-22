@@ -19,10 +19,10 @@ export default function handler(req, res) {
       });
     }
 
-    // 返回成功響應，提供新的 sid
+    // 返回成功
     return res.status(200).json({
       status: "OK",
-      sid: `new-sid-${Date.now()}`, // 模擬新會話 ID
+      // sid: `new-sid-${Date.now()}`,
       uuid,
     });
   } else {

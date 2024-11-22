@@ -11,13 +11,13 @@ export default async function handler(req, res) {
     try {
       const uuid = "550e8400-e29b-41d4-a716-446655440000";
 
-      // 建構符合成功範例的 payload
+      // 建構 payload
       const authPayload = {
         uuid,
         player: {
           id: username, // 使用者名稱作為玩家 ID
           update: true,
-          nickname: username, // 玩家暱稱
+          nickname: username,
           language: "en-GB",
           currency: "EUR",
           session: {
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
             ip:
               req.headers["x-forwarded-for"] ||
               req.socket.remoteAddress ||
-              "103.22.200.1", // 默認 IP 地址
+              "103.22.200.1",
           },
         },
         config: {

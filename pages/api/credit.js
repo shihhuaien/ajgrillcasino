@@ -1,24 +1,54 @@
-// pages/api/credit.js
-export default function handler(req, res) {
-    if (req.method === 'POST') {
-      const { sid, userId, transaction } = req.body;
-  
-      // 模擬 SID 和用戶驗證
-      if (sid === 'session12345' && userId === 'user123') {
-        const balance = 999.35; // 假設初始餘額
-        const newBalance = balance + transaction.amount;
-  
-        return res.status(200).json({
-          success: true,
-          newBalance: newBalance,
-          uuid: req.body.uuid,
-        });
-      }
-  
-      return res.status(401).json({ success: false, message: 'Invalid session or user' });
-    }
-  
-    res.setHeader('Allow', ['POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+import { v4 as uuidv4 } from "uuid";
+import { getPlayerBalance, updatePlayerBalance } from "../../lib/database";
+
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ status: "METHOD_NOT_ALLOWED" });
   }
-  
+
+  try {
+    const { sid, userId, currency, game, transaction, uuid } = req.body;
+
+    // 確認必要參數是否存在
+    if (!sid || !userId || !currency || !game || !transaction || !uuid) {
+      return res.status(400).json({
+        status: "BAD_REQUEST",
+        message: "Missing required fields",
+      });
+    }
+
+    // 從資料庫中獲取玩家餘額
+    const playerBalance = await getPlayerBalance(userId);
+    if (playerBalance === null) {
+      return res.status(404).json({
+        status: "USER_NOT_FOUND",
+        balance: null,
+      });
+    }
+
+    // 處理交易 (例如加/扣金額)
+    const newBalance = playerBalance + transaction.amount;
+
+    // 更新玩家餘額
+    const updateResult = await updatePlayerBalance(userId, newBalance);
+    if (!updateResult) {
+      return res.status(500).json({
+        status: "TEMPORARY_ERROR",
+        balance: null,
+      });
+    }
+
+    // 返回成功響應
+    res.status(200).json({
+      status: "OK",
+      balance: newBalance.toFixed(2), // 返回截取到小數點後2位的餘額
+      uuid: uuidv4(),
+    });
+  } catch (error) {
+    console.error("Error handling CreditRequest:", error);
+    res.status(500).json({
+      status: "TEMPORARY_ERROR",
+      balance: null,
+    });
+  }
+}
