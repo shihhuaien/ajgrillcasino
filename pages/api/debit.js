@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from "uuid"; // 用來生成唯一的 uuid
 import { getPlayerBalance, updatePlayerBalance } from "../../lib/database"; // 假設你有這些資料庫操作方法
-
 import Cors from "cors";
 
 // 初始化 CORS
