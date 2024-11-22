@@ -99,7 +99,7 @@ const Login = () => {
           Welcome to AJ Grill Casino
         </h2>
         <p className="text-center text-lg text-gray-300">
-          Let's play the best games in the world!
+          Let&#39;s play the best games in the world!
         </p>
         <div className="space-y-4">
           <div>
