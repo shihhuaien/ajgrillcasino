@@ -1,7 +1,32 @@
 import { v4 as uuidv4 } from "uuid"; // 用來生成唯一的 uuid
 import { getPlayerBalance, updatePlayerBalance } from "../../lib/database"; // 假設你有這些資料庫操作方法
 
+import Cors from "cors";
+
+// 初始化 CORS
+const cors = Cors({
+  methods: ["POST"], // 僅允許 POST 方法
+  origin: "*", // 允許所有域名（可以根據需求限制）
+});
+
+function runMiddleware(req, res, fn) {
+  return new Promise((resolve, reject) => {
+    fn(req, res, (result) => {
+      if (result instanceof Error) {
+        return reject(result);
+      }
+      return resolve(result);
+    });
+  });
+}
+
 export default async function handler(req, res) {
+  await runMiddleware(req, res, cors);
+
+  if (req.method !== "POST") {
+    return res.status(405).json({ status: "METHOD_NOT_ALLOWED" });
+  }
+
   if (req.method !== "POST") {
     return res.status(405).json({ status: "METHOD_NOT_ALLOWED" });
   }
@@ -11,12 +36,10 @@ export default async function handler(req, res) {
 
     // 驗證請求參數
     if (!sid || !userId || !currency || !game || !transaction || !uuid) {
-      return res
-        .status(400)
-        .json({
-          status: "INVALID_REQUEST",
-          message: "Missing required fields",
-        });
+      return res.status(400).json({
+        status: "INVALID_REQUEST",
+        message: "Missing required fields",
+      });
     }
 
     // 從資料庫獲取玩家餘額
