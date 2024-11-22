@@ -10,10 +10,12 @@
   },
   "dependencies": {
     "@material-tailwind/react": "^2.1.10",
+    "better-sqlite3": "^11.5.0",
     "cors": "^2.8.5",
     "next": "^15.0.3",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
+    "sqlite3": "^5.1.7",
     "uuid": "^11.0.3"
   },
   "devDependencies": {
