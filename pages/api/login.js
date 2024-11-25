@@ -11,7 +11,6 @@ export default async function handler(req, res) {
     try {
       const uuid = "550e8400-e29b-41d4-a716-446655440000";
 
-      // 建構 payload
       const authPayload = {
         uuid,
         player: {
