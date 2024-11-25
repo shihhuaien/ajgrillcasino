@@ -1,3 +1,5 @@
+import { supabase } from "../../lib/supabase";
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res
@@ -17,9 +19,17 @@ export default async function handler(req, res) {
       });
     }
 
-    // 模擬數據庫或服務查詢，用戶餘額和獎金數據
+    // 從 Supabase 獲取用戶餘額和獎金
     const userBalance = await getUserBalance(userId, currency);
     const userBonus = await getUserBonus(userId);
+
+    // 如果找不到用戶，返回錯誤
+    if (userBalance === null) {
+      return res.status(404).json({
+        status: "ERROR",
+        message: "User not found or currency mismatch",
+      });
+    }
 
     // 返回標準回應
     return res.status(200).json({
@@ -38,21 +48,50 @@ export default async function handler(req, res) {
   }
 }
 
-// 模擬查詢用戶餘額
+// 從資料庫中查詢用戶餘額
 async function getUserBalance(userId, currency) {
-  // 這裡應該連接到您的資料庫或後端服務以檢索用戶餘額
-  // 示例數據
-  const balances = {
-    EUR: 999.35,
-    USD: 1200.5,
-  };
+  try {
+    const { data, error } = await supabase
+      .from("player_balance")
+      .select("balance, currency")
+      .eq("user_id", userId)
+      .single();
 
-  return balances[currency] || 0.0; // 返回相應貨幣的餘額，默認為 0
+    if (error) {
+      console.error("Error fetching user balance:", error);
+      return null;
+    }
+
+    // 確保貨幣匹配
+    if (data.currency !== currency) {
+      console.error("Currency mismatch");
+      return null;
+    }
+
+    return data.balance; // 返回餘額
+  } catch (error) {
+    console.error("Error querying user balance:", error);
+    return null;
+  }
 }
 
-// 模擬查詢用戶獎金
+// 從資料庫中查詢用戶獎金
 async function getUserBonus(userId) {
-  // 這裡應該連接到您的資料庫或後端服務以檢索用戶獎金
-  // 示例數據
-  return 0.0; // 默認無獎金
+  try {
+    const { data, error } = await supabase
+      .from("player_balance")
+      .select("bonus")
+      .eq("user_id", userId)
+      .single();
+
+    if (error) {
+      console.error("Error fetching user bonus:", error);
+      return null;
+    }
+
+    return data.bonus; // 返回用戶獎金
+  } catch (error) {
+    console.error("Error querying user bonus:", error);
+    return null;
+  }
 }

@@ -1,3 +1,5 @@
+import { upsertPlayerData } from "../../lib/database";
+
 export default async function handler(req, res) {
   if (req.method === "POST") {
     const { username, password } = req.body;
@@ -14,11 +16,11 @@ export default async function handler(req, res) {
       const authPayload = {
         uuid,
         player: {
-          id: username, // 使用者名稱作為玩家 ID
+          id: username,
           update: true,
           nickname: username,
           language: "en-GB",
-          currency: "EUR",
+          currency: "USD",
           session: {
             id: `session-${username}`,
             ip:
@@ -33,10 +35,10 @@ export default async function handler(req, res) {
             skin: "1",
           },
           game: {
-            category: "roulette", // 遊戲類型
-            interface: "view1", // 遊戲介面
+            category: "roulette",
+            interface: "view1",
             table: {
-              id: "48z5pjps3ntvqc1b", // 符合 Postman 測試的遊戲桌 ID
+              id: "48z5pjps3ntvqc1b",
             },
           },
         },
@@ -58,6 +60,24 @@ export default async function handler(req, res) {
       }
 
       const authData = await authResponse.json();
+
+      // 模擬取得用戶的初始資料
+      const userBalance = 999; // 預設金額
+      const currency = "USD";
+      const bonus = 0; // 預設紅利
+
+      // 將用戶資料儲存到資料庫
+      const success = await upsertPlayerData({
+        user_id: username,
+        balance: userBalance,
+        currency,
+        bonus,
+      });
+
+      if (!success) {
+        throw new Error("Failed to save player data to the database.");
+      }
+
       return res.status(200).json({
         success: true,
         sid: authPayload.player.session.id,
