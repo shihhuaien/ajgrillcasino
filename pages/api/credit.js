@@ -22,9 +22,14 @@ export default async function handler(req, res) {
       });
     }
 
-    // 確認交易是否已存在
-    const transactionExists = await checkTransactionExists(transaction.id);
-    if (transactionExists) {
+    // 確認交易是否已存在或已結算
+    const { exists, settled } = await checkTransactionExists(
+      transaction.id,
+      game.id,
+      userId
+    );
+
+    if (exists && settled) {
       const playerBalance = await getPlayerBalance(userId);
       return res.status(409).json({
         status: "BET_ALREADY_SETTLED",
@@ -55,7 +60,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // 記錄交易
+    // 記錄交易並標記為已結算
     const transactionResult = await saveTransaction({
       transaction_id: transaction.id,
       ref_id: transaction.refId || null,
