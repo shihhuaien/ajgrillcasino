@@ -1,5 +1,10 @@
 import { v4 as uuidv4 } from "uuid";
-import { getPlayerBalance, updatePlayerBalance } from "../../lib/database";
+import {
+  getPlayerBalance,
+  updatePlayerBalance,
+  checkTransactionExists,
+  saveTransaction,
+} from "../../lib/database";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -17,6 +22,16 @@ export default async function handler(req, res) {
       });
     }
 
+    // 確認交易是否已存在
+    const transactionExists = await checkTransactionExists(transaction.id);
+    if (transactionExists) {
+      const playerBalance = await getPlayerBalance(userId);
+      return res.status(409).json({
+        status: "BET_ALREADY_SETTLED",
+        balance: playerBalance,
+      });
+    }
+
     // 從資料庫中獲取玩家餘額
     const playerBalance = await getPlayerBalance(userId);
     if (playerBalance === null) {
@@ -26,8 +41,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // 處理交易 (例如加金額)
-    // 保證計算結果保留小數點後6位，並且確保數值類型
+    // 計算新餘額
     const newBalance = parseFloat(
       (playerBalance + transaction.amount).toFixed(6)
     );
@@ -41,10 +55,30 @@ export default async function handler(req, res) {
       });
     }
 
+    // 記錄交易
+    const transactionResult = await saveTransaction({
+      transaction_id: transaction.id,
+      ref_id: transaction.refId || null,
+      user_id: userId,
+      sid,
+      currency,
+      amount: transaction.amount,
+      type: "BET", // 根據業務邏輯設置交易類型
+      game_id: game.id,
+      details: game.details || null,
+    });
+
+    if (!transactionResult) {
+      return res.status(500).json({
+        status: "TEMPORARY_ERROR",
+        balance: null,
+      });
+    }
+
     // 返回成功響應
     res.status(200).json({
       status: "OK",
-      balance: newBalance, // 返回純數值類型，確保不是字串
+      balance: newBalance,
       uuid: uuidv4(),
     });
   } catch (error) {
