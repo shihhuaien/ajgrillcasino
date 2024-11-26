@@ -41,7 +41,7 @@ export default async function handler(req, res) {
     // 返回成功
     return res.status(200).json({
       status: "OK",
-      balance: parseFloat(newBalance.toFixed(2)), // 保留2位小數
+      balance: parseFloat(newBalance.toFixed(6)), // 保留6位小數
       bonus: null, // 根據需要設定 bonus
       uuid,
     });
