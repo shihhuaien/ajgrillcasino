@@ -13,7 +13,7 @@ export default async function handler(req, res) {
     }
 
     // 如果沒有 SID，則生成新的 SID
-    const newSid = sid || `sid-${uuidv4()}`;
+    const newSid = sid || `session-${userId}`;
 
     // 儲存或更新 SID 到資料庫
     const success = await upsertSession(newSid, userId, channel);

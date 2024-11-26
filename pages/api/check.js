@@ -1,4 +1,6 @@
-export default function handler(req, res) {
+import { validateSession } from "../../lib/database";
+
+export default async function handler(req, res) {
   if (req.method === "POST") {
     const { sid, userId, channel, uuid } = req.body;
 
@@ -10,8 +12,8 @@ export default function handler(req, res) {
       });
     }
 
-    // 模擬用戶和會話驗證
-    const isValidSession = validateSession(sid, userId);
+    // 模擬用戶和會話驗證（改為真實邏輯）
+    const isValidSession = await validateSession(sid, userId);
     if (!isValidSession) {
       return res.status(401).json({
         status: "ERROR",
@@ -22,7 +24,6 @@ export default function handler(req, res) {
     // 返回成功
     return res.status(200).json({
       status: "OK",
-      // sid: `new-sid-${Date.now()}`,
       uuid,
     });
   } else {
@@ -30,10 +31,4 @@ export default function handler(req, res) {
     res.setHeader("Allow", ["POST"]);
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
-}
-
-// 模擬驗證邏輯
-function validateSession(sid, userId) {
-  // TODO: 在此實現真實的驗證邏輯，例如查詢數據庫或檢查緩存
-  return sid && userId; // 假設只要提供了 sid 和 userId 即驗證成功
 }
