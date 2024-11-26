@@ -63,7 +63,6 @@ export default async function handler(req, res) {
       sid,
       currency,
       amount: transaction.amount,
-      type: "BET", // 根據業務邏輯設置交易類型
       game_id: game.id,
       details: game.details || null,
     });
