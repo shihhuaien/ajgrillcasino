@@ -26,8 +26,11 @@ export default async function handler(req, res) {
       });
     }
 
-    // 處理交易 (例如加/扣金額)
-    const newBalance = playerBalance + transaction.amount;
+    // 處理交易 (例如加金額)
+    // 保證計算結果保留小數點後6位，並且確保數值類型
+    const newBalance = parseFloat(
+      (playerBalance + transaction.amount).toFixed(6)
+    );
 
     // 更新玩家餘額
     const updateResult = await updatePlayerBalance(userId, newBalance);
@@ -41,7 +44,7 @@ export default async function handler(req, res) {
     // 返回成功響應
     res.status(200).json({
       status: "OK",
-      balance: newBalance.toFixed(6), // 返回截取到小數點後6位的餘額
+      balance: newBalance, // 返回純數值類型，確保不是字串
       uuid: uuidv4(),
     });
   } catch (error) {
