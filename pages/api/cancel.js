@@ -40,7 +40,7 @@ export default async function handler(req, res) {
     // 構建回應
     const response = {
       status: "OK",
-      balance: newBalance.toFixed(2), // 餘額保留兩位小數
+      balance: newBalance.toFixed(6), // 餘額保留兩位小數
       bonus: 0.0, // 假設無額外 bonus
       uuid, // 回傳請求中的 uuid
     };
