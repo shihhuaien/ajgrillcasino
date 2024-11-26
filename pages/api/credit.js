@@ -41,7 +41,7 @@ export default async function handler(req, res) {
     // 返回成功響應
     res.status(200).json({
       status: "OK",
-      balance: newBalance.toFixed(6), // 返回截取到小數點後2位的餘額
+      balance: newBalance.toFixed(6), // 返回截取到小數點後6位的餘額
       uuid: uuidv4(),
     });
   } catch (error) {

@@ -31,11 +31,15 @@ export default async function handler(req, res) {
       });
     }
 
+    // 保證餘額和獎金只保留小數點後六位
+    const formattedBalance = parseFloat(userBalance.toFixed(6));
+    const formattedBonus = parseFloat((userBonus || 0.0).toFixed(6));
+
     // 返回標準回應
     return res.status(200).json({
       status: "OK",
-      balance: userBalance, // 返回真實餘額
-      bonus: userBonus || 0.0, // 獎金餘額可選
+      balance: formattedBalance, // 返回真實餘額，保留六位小數
+      bonus: formattedBonus, // 返回獎金餘額，保留六位小數
       uuid, // 回應與請求的 UUID 一致
     });
   } catch (error) {
@@ -68,7 +72,7 @@ async function getUserBalance(userId, currency) {
       return null;
     }
 
-    return data.balance; // 返回餘額
+    return parseFloat(data.balance.toFixed(6)); // 返回餘額，保留六位小數
   } catch (error) {
     console.error("Error querying user balance:", error);
     return null;
@@ -89,7 +93,7 @@ async function getUserBonus(userId) {
       return null;
     }
 
-    return data.bonus; // 返回用戶獎金
+    return parseFloat((data.bonus || 0.0).toFixed(6)); // 返回用戶獎金，保留六位小數
   } catch (error) {
     console.error("Error querying user bonus:", error);
     return null;

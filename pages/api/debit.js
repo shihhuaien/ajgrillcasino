@@ -52,13 +52,17 @@ export default async function handler(req, res) {
     if (playerBalance < transaction.amount) {
       return res.status(200).json({
         status: "INSUFFICIENT_FUNDS",
-        balance: playerBalance,
+        balance: parseFloat(playerBalance.toFixed(6)),
         uuid,
       });
     }
 
     // 更新玩家餘額（扣除下注金額）
-    const newBalance = playerBalance - transaction.amount;
+    const newBalance = parseFloat(
+      (playerBalance - transaction.amount).toFixed(6)
+    );
+    console.log(playerBalance);
+    console.log(transaction);
     const updateResult = await updatePlayerBalance(userId, newBalance);
 
     if (!updateResult) {
