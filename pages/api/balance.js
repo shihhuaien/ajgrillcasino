@@ -52,7 +52,7 @@ export default async function handler(req, res) {
 async function getUserBalance(userId, currency) {
   try {
     const { data, error } = await supabase
-      .from("player_balance")
+      .from("player")
       .select("balance, currency")
       .eq("user_id", userId)
       .single();
@@ -79,7 +79,7 @@ async function getUserBalance(userId, currency) {
 async function getUserBonus(userId) {
   try {
     const { data, error } = await supabase
-      .from("player_balance")
+      .from("player")
       .select("bonus")
       .eq("user_id", userId)
       .single();

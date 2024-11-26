@@ -2,7 +2,7 @@ import { supabase } from "../lib/supabase.js";
 
 async function insertTestData() {
   const { data, error } = await supabase
-    .from("player_balance")
+    .from("player")
     .insert([
       { user_id: "test_user30", balance: 30.0, currency: "USD", bonus: 0.0 },
     ]);

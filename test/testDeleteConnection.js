@@ -2,7 +2,7 @@ import { supabase } from "../lib/supabase.js";
 
 async function deleteTestData() {
   const { data, error } = await supabase
-    .from("player_balance")
+    .from("player")
     .delete()
     .eq("user_id", "test_user");
 

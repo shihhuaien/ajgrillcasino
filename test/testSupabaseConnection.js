@@ -3,7 +3,7 @@ import { supabase } from "../lib/supabase.js";
 
 async function testConnection() {
   try {
-    const { data, error } = await supabase.from("player_balance").select("*");
+    const { data, error } = await supabase.from("player").select("*");
 
     if (error) {
       console.error("Connection failed:", error.message);

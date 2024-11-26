@@ -62,7 +62,7 @@ export default async function handler(req, res) {
       const authData = await authResponse.json();
 
       // 模擬取得用戶的初始資料
-      const userBalance = 999; // 預設金額
+      const userBalance = 1000; // 預設金額
       const currency = "USD";
       const bonus = 0; // 預設紅利
 

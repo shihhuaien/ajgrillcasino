@@ -2,7 +2,7 @@ import { supabase } from "../lib/supabase.js";
 
 async function fetchTestData() {
   const { data, error } = await supabase
-    .from("player_balance")
+    .from("player")
     .select("*")
     .eq("user_id", "test_user2");
 
