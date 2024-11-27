@@ -86,7 +86,7 @@ export default async function handler(req, res) {
     } catch (error) {
       console.error("Authentication API Error:", error);
       return res
-        .status(500)
+        .status(200)
         .json({ success: false, message: "Internal server error" });
     }
   } else {

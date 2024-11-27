@@ -3,7 +3,7 @@ import { getPlayerBalance, updatePlayerBalance } from "../../lib/database";
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res
-      .status(405)
+      .status(200)
       .json({ status: "ERROR", message: "Method not allowed" });
   }
 
@@ -11,7 +11,7 @@ export default async function handler(req, res) {
 
   if (!sid || !userId || !currency || !promoTransaction || !uuid) {
     return res
-      .status(400)
+      .status(200)
       .json({ status: "ERROR", message: "Missing required parameters" });
   }
 
@@ -31,7 +31,7 @@ export default async function handler(req, res) {
     // 更新玩家餘額
     const updateSuccess = await updatePlayerBalance(userId, newBalance);
     if (!updateSuccess) {
-      return res.status(500).json({
+      return res.status(200).json({
         status: "TEMPORARY_ERROR",
         message: "Failed to update balance",
         uuid,
@@ -47,7 +47,7 @@ export default async function handler(req, res) {
     });
   } catch (error) {
     console.error("Error handling PromoPayoutRequest:", error);
-    return res.status(500).json({
+    return res.status(200).json({
       status: "TEMPORARY_ERROR",
       message: "Internal server error",
       uuid,

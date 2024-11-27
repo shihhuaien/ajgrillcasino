@@ -3,7 +3,7 @@ import { supabase } from "../../lib/supabase";
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res
-      .status(405)
+      .status(200)
       .json({ status: "ERROR", message: "Method Not Allowed" });
   }
 
@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
     // 驗證請求的必要屬性
     if (!sid || !userId || !currency || !uuid) {
-      return res.status(400).json({
+      return res.status(200).json({
         status: "ERROR",
         message: "Missing required parameters in request",
       });
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
 
     // 如果找不到用戶，返回錯誤
     if (userBalance === null) {
-      return res.status(404).json({
+      return res.status(200).json({
         status: "ERROR",
         message: "User not found or currency mismatch",
       });
@@ -45,7 +45,7 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error("Error handling balance request:", error);
 
-    return res.status(500).json({
+    return res.status(200).json({
       status: "TEMPORARY_ERROR",
       message: "Internal server error",
     });

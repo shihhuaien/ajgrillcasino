@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     // 驗證必要參數
     if (!userId || !uuid || !channel?.type) {
       return res
-        .status(400)
+        .status(200)
         .json({ status: "ERROR", message: "Missing required fields" });
     }
 
@@ -20,7 +20,7 @@ export default async function handler(req, res) {
 
     if (!success) {
       return res
-        .status(500)
+        .status(200)
         .json({ status: "ERROR", message: "Failed to upsert SID" });
     }
 
@@ -37,14 +37,14 @@ export default async function handler(req, res) {
 
     if (!isValid) {
       return res
-        .status(404)
+        .status(200)
         .json({ status: "ERROR", message: "SID not found" });
     }
 
     return res.status(200).json({ status: "OK", message: "SID is valid" });
   } else {
     res.setHeader("Allow", ["POST", "GET"]);
-    return res.status(405).json({
+    return res.status(200).json({
       status: "ERROR",
       message: `Method ${req.method} Not Allowed`,
     });
