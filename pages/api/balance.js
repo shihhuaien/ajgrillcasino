@@ -1,6 +1,8 @@
 import { supabase } from "../../lib/supabase";
 
 export default async function handler(req, res) {
+  res.setHeader("Connection", "keep-alive");
+
   if (req.method !== "POST") {
     return res
       .status(200)

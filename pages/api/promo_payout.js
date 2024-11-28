@@ -8,6 +8,8 @@ import {
 import { v4 as uuidv4 } from "uuid";
 
 export default async function handler(req, res) {
+  res.setHeader("Connection", "keep-alive");
+
   if (req.method !== "POST") {
     return res
       .status(200)

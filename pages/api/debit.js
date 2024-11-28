@@ -27,6 +27,8 @@ function runMiddleware(req, res, fn) {
 }
 
 export default async function handler(req, res) {
+  res.setHeader("Connection", "keep-alive");
+
   await runMiddleware(req, res, cors);
 
   if (req.method !== "POST") {

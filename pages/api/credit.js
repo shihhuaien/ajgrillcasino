@@ -8,6 +8,7 @@ import {
 } from "../../lib/database";
 
 export default async function handler(req, res) {
+  res.setHeader("Connection", "keep-alive");
   if (req.method !== "POST") {
     return res.status(200).json({ status: "METHOD_NOT_ALLOWED" });
   }
