@@ -2,8 +2,8 @@ import {
   validateSession,
   getPlayerBalance,
   updatePlayerBalance,
-  checkTransactionExists,
-  saveTransaction,
+  checkPromoTransactionExists,
+  savePromoTransaction,
 } from "../../lib/database";
 import { v4 as uuidv4 } from "uuid";
 
@@ -40,15 +40,14 @@ export default async function handler(req, res) {
     }
 
     // 驗證交易是否已存在
-    const { exists, settled } = await checkTransactionExists(
-      transaction.id,
-      transaction.refId,
+    const { exists, settled } = await checkPromoTransactionExists(
+      promoTransaction.id,
       userId
     );
     if (exists) {
       return res.status(200).json({
         status: "BET_ALREADY_SETTLED",
-        message: "Duplicate transaction.id detected",
+        message: "Duplicate promo transaction detected",
         balance: parseFloat(currentBalance.toFixed(6)),
         uuid,
       });
@@ -73,23 +72,21 @@ export default async function handler(req, res) {
     }
 
     // 記錄交易並標記為已結算
-    const transactionResult = await saveTransaction({
-      transaction_id: transaction.id,
-      ref_id: transaction.refId || null,
+    // 記錄交易
+    const saveSuccess = await savePromoTransaction({
+      promo_id: promoTransaction.id,
       user_id: userId,
-      sid,
-      currency,
-      amount: transaction.amount,
-      game_id: game.id,
-      details: game.details || null,
-      settled: false,
-      transaction_type: "promo_payout",
+      type: promoTransaction.type,
+      amount: promoTransaction.amount,
+      remaining_rounds: promoTransaction.remainingRounds || 0,
+      game_id: game?.id || null,
+      jackpots: promoTransaction.jackpots || null,
     });
-    if (!transactionResult) {
-      return res.status(200).json({
+    if (!saveSuccess) {
+      return res.status(500).json({
         status: "TEMPORARY_ERROR",
-        balance: null,
-        uuid: uuidv4(),
+        message: "Failed to save promo transaction",
+        uuid,
       });
     }
 
