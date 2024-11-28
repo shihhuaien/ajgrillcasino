@@ -67,19 +67,6 @@ export default async function handler(req, res) {
       });
     }
 
-    // 確認是否有取消交易
-    const hasCancelTransaction = transactionList.some(
-      (tx) => tx.transaction_type === "cancel"
-    );
-    if (hasCancelTransaction) {
-      const playerBalance = await getPlayerBalance(userId);
-      return res.status(200).json({
-        status: "FINAL_ERROR_ACTION_FAILED",
-        balance: playerBalance ? playerBalance.toFixed(6) : null,
-        uuid,
-      });
-    }
-
     // 確認是否有任何交易已結算
     const hasSettled = transactionList.some((tx) => tx.settled);
     if (hasSettled) {
