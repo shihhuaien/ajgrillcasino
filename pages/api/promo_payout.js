@@ -33,11 +33,6 @@ export default async function handler(req, res) {
   try {
     // 獲取玩家餘額
     const currentBalance = await getPlayerBalance(userId);
-    if (currentBalance === null) {
-      return res
-        .status(404)
-        .json({ status: "ERROR", message: "User not found", uuid });
-    }
 
     // 驗證交易是否已存在
     const { exists, settled } = await checkPromoTransactionExists(
@@ -72,7 +67,6 @@ export default async function handler(req, res) {
     }
 
     // 記錄交易並標記為已結算
-    // 記錄交易
     const saveSuccess = await savePromoTransaction({
       promo_id: promoTransaction.id,
       user_id: userId,

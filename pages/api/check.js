@@ -1,6 +1,9 @@
 import { validateSession } from "../../lib/database";
 
 export default async function handler(req, res) {
+  // 確保所有回應都包含 Connection: keep-alive 標頭
+  res.setHeader("Connection", "keep-alive");
+
   if (req.method === "POST") {
     const { sid, userId, channel, uuid } = req.body;
 
