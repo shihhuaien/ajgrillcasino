@@ -39,8 +39,42 @@ export default async function handler(req, res) {
     // 如果沒有匹配的交易
     if (transactionList.length === 0) {
       const playerBalance = await getPlayerBalance(userId);
+
+      // 保存交易記錄，標記為 cancel_before_debit
+      const saveCancelBeforeDebit = await saveTransaction({
+        transaction_id: transaction.id, // 交易 ID
+        ref_id: refId, // 參考 ID
+        user_id: userId, // 用戶 ID
+        sid, // session ID
+        currency, // 貨幣類型
+        amount: 0, // 沒有金額涉及的取消
+        game_id: game, // 遊戲 ID
+        details: game.details || null, // 遊戲細節
+        settled: false, // 該交易尚未結算
+        transaction_type: "cancel_bet_no_exist",
+      });
+
+      if (!saveCancelBeforeDebit) {
+        return res.status(200).json({
+          status: "TEMPORARY_ERROR",
+          message: "Failed to save cancel_before_debit transaction",
+        });
+      }
       return res.status(200).json({
         status: "BET_DOES_NOT_EXIST",
+        balance: playerBalance ? playerBalance.toFixed(6) : null,
+        uuid,
+      });
+    }
+
+    // 確認是否有取消交易
+    const hasCancelTransaction = transactionList.some(
+      (tx) => tx.transaction_type === "cancel"
+    );
+    if (hasCancelTransaction) {
+      const playerBalance = await getPlayerBalance(userId);
+      return res.status(200).json({
+        status: "FINAL_ERROR_ACTION_FAILED",
         balance: playerBalance ? playerBalance.toFixed(6) : null,
         uuid,
       });

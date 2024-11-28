@@ -5,6 +5,7 @@ import {
   updatePlayerBalance,
   saveTransaction,
   checkTransactionExists,
+  getTransactionsByRefId,
 } from "../../lib/database";
 
 import Cors from "cors";
@@ -51,6 +52,26 @@ export default async function handler(req, res) {
       return res.status(200).json({
         status: "INVALID_PARAMETER",
         message: "Invalid session or user",
+      });
+    }
+
+    const { refId } = transaction;
+    const transactionList = await getTransactionsByRefId(refId, userId);
+    // //testing
+    // transactionList.forEach((tx, index) => {
+    //   console.log(`Transaction ${index + 1}:`, tx);
+    // });
+
+    // 確認是否有取消交易
+    const hasCancelTransaction = transactionList.some(
+      (tx) => tx.transaction_type === "cancel_bet_no_exist"
+    );
+    if (hasCancelTransaction) {
+      const playerBalance = await getPlayerBalance(userId);
+      return res.status(200).json({
+        status: "FINAL_ERROR_ACTION_FAILED",
+        balance: playerBalance ? playerBalance.toFixed(6) : null,
+        uuid,
       });
     }
 
