@@ -108,7 +108,8 @@ export default async function handler(req, res) {
       amount: transaction.amount,
       game_id: game.id,
       details: game.details || null,
-      settled: false, // 扣款操作不應直接標記為結算
+      settled: false,
+      transaction_type: "debit",
     });
 
     if (!transactionSaved) {

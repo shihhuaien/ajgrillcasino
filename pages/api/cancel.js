@@ -2,7 +2,7 @@ import {
   validateSession,
   getPlayerBalance,
   updatePlayerBalance,
-  checkTransactionExists,
+  getTransactionsByRefId,
   saveTransaction,
 } from "@/lib/database";
 
@@ -29,13 +29,13 @@ export default async function handler(req, res) {
       });
     }
 
-    const { id, refId, amount } = transaction;
+    const { refId } = transaction;
 
-    // 檢查交易是否已存在並是否已結算
-    const transactionCheck = await checkTransactionExists(id, refId, userId);
+    // 查詢所有與 refId 匹配的交易
+    const transactionList = await getTransactionsByRefId(refId, userId);
 
-    // 如果交易不存在
-    if (!transactionCheck.exists) {
+    // 如果沒有匹配的交易
+    if (transactionList.length === 0) {
       const playerBalance = await getPlayerBalance(userId);
       return res.status(200).json({
         status: "BET_DOES_NOT_EXIST",
@@ -44,8 +44,9 @@ export default async function handler(req, res) {
       });
     }
 
-    // 如果交易已結算
-    if (transactionCheck.settled) {
+    // 確認是否有任何交易已結算
+    const hasSettled = transactionList.some((tx) => tx.settled);
+    if (hasSettled) {
       const playerBalance = await getPlayerBalance(userId);
       return res.status(200).json({
         status: "BET_ALREADY_SETTLED",
@@ -53,6 +54,9 @@ export default async function handler(req, res) {
         uuid,
       });
     }
+
+    // 計算所有未結算交易的總金額
+    const totalAmount = transactionList.reduce((sum, tx) => sum + tx.amount, 0);
 
     // 獲取用戶餘額
     const playerBalance = await getPlayerBalance(userId);
@@ -62,7 +66,11 @@ export default async function handler(req, res) {
         .json({ status: "ERROR", message: "User not found" });
     }
 
-    // 模擬取消交易邏輯
+    //如果要自己計算要返回給player的總數
+    //const newBalance = playerBalance + totalAmount;
+
+    //直接用request的amount來返還
+    const { amount } = transaction; // 從請求中提取 amount
     const newBalance = playerBalance + amount;
 
     // 更新用戶餘額
@@ -75,15 +83,16 @@ export default async function handler(req, res) {
 
     // 保存取消交易記錄
     const saveSuccess = await saveTransaction({
-      transaction_id: id,
+      transaction_id: transaction.id, // 只需要保存一次取消記錄
       ref_id: refId,
       user_id: userId,
       sid,
       currency,
-      amount,
+      amount: totalAmount,
       game_id: game,
       details: game.details || null,
       settled: true,
+      transaction_type: "cancel",
     });
 
     if (!saveSuccess) {

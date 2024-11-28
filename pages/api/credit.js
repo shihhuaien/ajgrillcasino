@@ -93,6 +93,7 @@ export default async function handler(req, res) {
       game_id: game.id,
       details: game.details || null,
       settled: true, // 標記為已結算
+      transaction_type: "credit",
     });
 
     if (!transactionResult) {

@@ -26,7 +26,7 @@ export default async function handler(req, res) {
     // 如果找不到用戶，返回錯誤
     if (userBalance === null) {
       return res.status(200).json({
-        status: "ERROR",
+        status: "INVALID_PARAMETER",
         message: "User not found or currency mismatch",
       });
     }
