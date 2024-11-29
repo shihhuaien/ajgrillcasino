@@ -1,4 +1,4 @@
-import { upsertPlayerData } from "../../lib/database";
+import { upsertPlayerData, upsertSession } from "../../lib/database";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
@@ -12,6 +12,19 @@ export default async function handler(req, res) {
 
     try {
       const uuid = "550e8400-e29b-41d4-a716-446655440000";
+      // 如果沒有 SID，則生成新的 SID ，以下為初始值
+      const newSid = `session-${username}`;
+      const userId = username;
+      const channel = { type: "P" };
+
+      // 儲存或更新 SID 到資料庫
+      const successGetSid = await upsertSession(newSid, userId, channel);
+
+      if (!successGetSid) {
+        return res
+          .status(200)
+          .json({ status: "ERROR", message: "Failed to upsert SID" });
+      }
 
       const authPayload = {
         uuid,
@@ -40,6 +53,9 @@ export default async function handler(req, res) {
             table: {
               id: "48z5pjps3ntvqc1b",
             },
+          },
+          urls: {
+            rngHomeButton: "https://ajgrillcasino.vercel.app/", // 設定返回頁面 URL
           },
         },
       };
