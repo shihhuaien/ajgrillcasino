@@ -2,9 +2,9 @@ import { upsertPlayerData, upsertSession } from "../../lib/database";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
-    const { username, password } = req.body;
+    const { username, password, image } = req.body;
 
-    if (!username || !password) {
+    if (!username || !password || !image) {
       return res
         .status(400)
         .json({ success: false, message: "Missing credentials" });
@@ -12,7 +12,6 @@ export default async function handler(req, res) {
 
     try {
       const uuid = "550e8400-e29b-41d4-a716-446655440000";
-      // 如果沒有 SID，則生成新的 SID ，以下為初始值
       const newSid = `session-${username}`;
       const userId = username;
       const channel = { type: "P" };
@@ -48,10 +47,10 @@ export default async function handler(req, res) {
             skin: "1",
           },
           game: {
-            category: "roulette",
+            category: image.gameTypeCode,
             interface: "view1",
             table: {
-              id: "rng-bj-standard0",
+              id: image.table_id,
             },
           },
           urls: {

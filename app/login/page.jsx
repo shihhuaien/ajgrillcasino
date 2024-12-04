@@ -76,7 +76,7 @@ const Login = () => {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center">
-      {/* Background Video */}
+      {/* Background Video
       <video
         className="absolute inset-0 w-full h-full object-cover"
         src="/platinum_prive_blackjack_banner_video_15_sec_2024_11.mp4"
@@ -84,8 +84,8 @@ const Login = () => {
         loop
         muted
       />
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black opacity-50"></div>
+      
+      <div className="absolute inset-0 bg-black opacity-50"></div> */}
       {/* Login Form */}
       <div
         className="relative w-full max-w-md p-5 space-y-6 bg-gray-500 bg-opacity-50 rounded-lg shadow-lg"
