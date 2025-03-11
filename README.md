@@ -1,3 +1,6 @@
+開發進度：
+[skype 自動化發信系統]目前可順利登入，但無法進入指定的群組，需要去查文件看怎麼處理。
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
