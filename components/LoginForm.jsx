@@ -8,14 +8,14 @@ const Login = ({ image, loginButtonRef }) => {
   const [password, setPassword] = useState("");
   const [userNameError, setUserNameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [imageError, setImageError] = useState(""); // 新增 image 驗證錯誤
+  const [imageError, setImageError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const validateForm = () => {
     setUserNameError("");
     setPasswordError("");
-    setImageError(""); // 重置 image 錯誤訊息
+    setImageError("");
 
     let isValid = true;
 
@@ -107,12 +107,10 @@ const Login = ({ image, loginButtonRef }) => {
         }}
       >
         <h2 className="text-center text-2xl font-bold text-gray-100">
-          歡迎來到 AJ Grill 娛樂場
+          歡迎來到 AJ Grill
         </h2>
 
-        <p className="text-center text-lg text-gray-300">
-          讓我們一起玩世界上最好的遊戲吧！
-        </p>
+        <p className="text-center text-lg text-gray-300">請點選右邊的遊戲</p>
         <div className="space-y-4">
           <div>
             <input
@@ -130,7 +128,7 @@ const Login = ({ image, loginButtonRef }) => {
             <input
               className={`block w-full px-3 py-2 border ${
                 passwordError ? "border-red-500" : "border-gray-300"
-              } rounded-md shadow-sm placeholder-gray-400 text-gray-800 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm`}
+              } rounded-md shadow-sm placeholder-gray-600 text-gray-800 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm`}
               type="password"
               placeholder="密碼"
               value={password}
@@ -147,7 +145,7 @@ const Login = ({ image, loginButtonRef }) => {
             <button
               ref={loginButtonRef}
               onClick={handleLogin}
-              className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex justify-center items-center"
+              className="visibility: hidden w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex justify-center items-center"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -201,7 +199,7 @@ const Login = ({ image, loginButtonRef }) => {
             </svg>
           ) : (
             <p className="font-medium text-gray-200 hover:text-gray-400">
-              請選擇您喜愛的遊戲。
+              如果登入失敗，不要太擔心，再試一次可能就成功了
             </p>
           )}
         </div>
