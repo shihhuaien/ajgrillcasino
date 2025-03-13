@@ -97,7 +97,7 @@ const Home = () => {
                     e.target.style.display = "none"; // 隱藏載入失敗的圖片
                   }}
                 />
-                <p className="text-white text-center mt-2">{image.alt}</p>{" "}
+                {/* <p className="text-white text-center mt-2">{image.alt}</p>{" "} */}
                 {/* 顯示桌子名稱 */}
               </button>
             ))
