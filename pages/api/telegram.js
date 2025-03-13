@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN; // 在 .env.local 設定你的 Telegram Bot Token
-const QUESTIONNAIRE_LINK = "https://drive.google.com/file/d/xxxxxxxxxx/view"; // 替換成你的問卷連結
+const QUESTIONNAIRE_LINK = "https://drive.google.com/file/d/xxxxxxxxxx/view";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {

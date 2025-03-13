@@ -8,86 +8,96 @@ const Login = ({ image, loginButtonRef }) => {
   const [password, setPassword] = useState("");
   const [userNameError, setUserNameError] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // 用於顯示動畫
+  const [imageError, setImageError] = useState(""); // 新增 image 驗證錯誤
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const validateForm = () => {
     setUserNameError("");
     setPasswordError("");
+    setImageError(""); // 重置 image 錯誤訊息
+
+    let isValid = true;
 
     if (!userName) {
-      setUserNameError("Please enter your user name");
-      return false;
+      setUserNameError("請輸入您的使用者名稱");
+      isValid = false;
     }
 
     if (!password) {
-      setPasswordError("Please enter your password");
-      return false;
+      setPasswordError("請輸入您的密碼");
+      isValid = false;
     } else if (password.length < 5) {
-      setPasswordError("Password must be at least 5 characters");
-      return false;
+      setPasswordError("密碼必須至少 5 個字元");
+      isValid = false;
     }
 
-    return true;
+    if (!image) {
+      setImageError("請先選擇您喜愛的遊戲桌子");
+      isValid = false;
+    }
+
+    return isValid;
   };
 
   const handleLogin = async () => {
-    if (validateForm()) {
-      setIsLoading(true);
-      try {
-        const res = await fetch("/api/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: userName,
-            password: password,
-            image, // 傳遞整個 image 物件
-          }),
-        });
+    if (!validateForm()) {
+      return; // 如果驗證失敗，直接返回
+    }
 
-        if (!res.ok) {
-          console.error("Response not OK:", res.status, res.statusText);
-          alert("Login failed. Please try again.");
-          setIsLoading(false);
-          return;
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: userName,
+          password: password,
+          image, // 傳遞整個 image 物件
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("回應錯誤:", res.status, res.statusText, errorData);
+        alert(errorData.message || "登入失敗，請再試一次。");
+        setIsLoading(false);
+        return;
+      }
+
+      const data = await res.json();
+
+      if (data.success) {
+        sessionStorage.setItem("sid", data.sid);
+        if (data.authToken) {
+          sessionStorage.setItem("authToken", data.authToken);
         }
-
-        const data = await res.json();
-
-        if (data.success) {
-          sessionStorage.setItem("sid", data.sid);
-          if (data.authToken) {
-            sessionStorage.setItem("authToken", data.authToken);
-          }
-          router.push(`https://diyow6.uat1.evo-test.com${data.authToken}`);
-          setIsLoading(false);
-        } else {
-          alert(data.message || "Login failed");
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.error("Error logging in:", error);
-        alert("An error occurred during login.");
+        router.push(`https://diyow6.uat1.evo-test.com${data.authToken}`);
+      } else {
+        alert(data.message || "登入失敗");
         setIsLoading(false);
       }
+    } catch (error) {
+      console.error("登入過程中發生錯誤:", error);
+      alert("登入時發生錯誤，請稍後再試。");
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="relative min-h-screen flex items-center justify-center">
-      {/* Background Video
-      <video
+      {/* 背景影片（已註解） */}
+      {/* <video
         className="absolute inset-0 w-full h-full object-cover"
         src="/platinum_prive_blackjack_banner_video_15_sec_2024_11.mp4"
         autoPlay
         loop
         muted
       />
-      
       <div className="absolute inset-0 bg-black opacity-50"></div> */}
-      {/* Login Form */}
+      {/* 登入表單 */}
       <div
         className="relative w-full max-w-md p-5 space-y-6 bg-gray-500 bg-opacity-50 rounded-lg shadow-lg"
         onKeyDown={(e) => {
@@ -97,18 +107,18 @@ const Login = ({ image, loginButtonRef }) => {
         }}
       >
         <h2 className="text-center text-2xl font-bold text-gray-100">
-          Welcome to AJ Grill Casino
+          歡迎來到 AJ Grill 娛樂場
         </h2>
 
         <p className="text-center text-lg text-gray-300">
-          Let&#39;s play the best games in the world!
+          讓我們一起玩世界上最好的遊戲吧！
         </p>
         <div className="space-y-4">
           <div>
             <input
               className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-600 text-gray-800 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               type="text"
-              placeholder="User Name"
+              placeholder="使用者名稱"
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
             />
@@ -122,7 +132,7 @@ const Login = ({ image, loginButtonRef }) => {
                 passwordError ? "border-red-500" : "border-gray-300"
               } rounded-md shadow-sm placeholder-gray-400 text-gray-800 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm`}
               type="password"
-              placeholder="Password"
+              placeholder="密碼"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -130,11 +140,14 @@ const Login = ({ image, loginButtonRef }) => {
               <p className="text-sm text-red-500 mt-1">{passwordError}</p>
             )}
           </div>
+          {imageError && (
+            <p className="text-sm text-red-500 mt-1">{imageError}</p>
+          )}
           <div>
             <button
               ref={loginButtonRef}
               onClick={handleLogin}
-              className={`w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex justify-center items-center hidden`}
+              className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex justify-center items-center"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -151,15 +164,15 @@ const Login = ({ image, loginButtonRef }) => {
                     r="10"
                     stroke="currentColor"
                     strokeWidth="4"
-                  ></circle>
+                  />
                   <path
                     className="opacity-75"
                     fill="currentColor"
                     d="M4 12a8 8 0 018-8V0C6.48 0 0 6.48 0 12h4z"
-                  ></path>
+                  />
                 </svg>
               ) : (
-                "Log in"
+                "登入"
               )}
             </button>
           </div>
@@ -179,16 +192,16 @@ const Login = ({ image, loginButtonRef }) => {
                 r="10"
                 stroke="currentColor"
                 strokeWidth="4"
-              ></circle>
+              />
               <path
                 className="opacity-75"
                 fill="currentColor"
                 d="M4 12a8 8 0 018-8V0C6.48 0 0 6.48 0 12h4z"
-              ></path>
+              />
             </svg>
           ) : (
             <p className="font-medium text-gray-200 hover:text-gray-400">
-              Please select your favorite game.
+              請選擇您喜愛的遊戲。
             </p>
           )}
         </div>

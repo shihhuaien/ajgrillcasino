@@ -4,19 +4,50 @@ import Image from "next/image";
 import Link from "next/link";
 import LoginForm from "@/components/LoginForm";
 import Bridge from "@/components/Icons/Bridge";
-import Login from "../login/page";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRef } from "react";
-import images from "@/lib/table";
 
 const Home = () => {
-  const loginButtonRef = useRef(null); // 創建 Ref 綁定 Login 按鈕
-  const [selectedImage, setSelectedImage] = useState(null); // 儲存點擊的圖片物件
+  const loginButtonRef = useRef(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [tableImages, setTableImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTableImages = async () => {
+      try {
+        const response = await fetch("/api/tables");
+        const data = await response.json();
+        // 篩選有有效圖片的桌子
+        const filteredTables = (data.tables || []).filter(
+          (table) =>
+            table.src && table.src.trim() !== "" && isValidUrl(table.src)
+        );
+        setTableImages(filteredTables);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching table images:", error);
+        setLoading(false);
+      }
+    };
+
+    // 簡單的 URL 有效性檢查
+    const isValidUrl = (string) => {
+      try {
+        new URL(string);
+        return true;
+      } catch (_) {
+        return false;
+      }
+    };
+
+    fetchTableImages();
+  }, []);
 
   const handleImageClick = (image) => {
-    setSelectedImage(image); // 儲存點擊的圖片物件
+    setSelectedImage(image);
     if (loginButtonRef.current) {
-      loginButtonRef.current.click(); // 觸發按鈕的點擊事件
+      loginButtonRef.current.click();
     }
   };
 
@@ -38,27 +69,39 @@ const Home = () => {
               />
             </div>
           </div>
-          {images.slice(1).map((image) => (
-            <button
-              key={image.id}
-              className="transform rounded-lg brightness-90 transition will-change-auto group-hover:brightness-110"
-              onClick={() => handleImageClick(image)} // 點擊時觸發
-            >
-              {" "}
-              <Image
-                alt={image.alt}
+          {loading ? (
+            <p>Loading tables...</p>
+          ) : tableImages.length === 0 ? (
+            <p>No tables with images available.</p>
+          ) : (
+            tableImages.map((image) => (
+              <button
+                key={image.id}
                 className="transform rounded-lg brightness-90 transition will-change-auto group-hover:brightness-110"
-                style={{ transform: "translate3d(0, 0, 0)" }}
-                src={image.src}
-                width={720}
-                height={480}
-                sizes="(max-width: 640px) 100vw,
-                  (max-width: 1280px) 50vw,
-                  (max-width: 1536px) 33vw,
-                  25vw"
-              />
-            </button>
-          ))}
+                onClick={() => handleImageClick(image)}
+              >
+                <Image
+                  alt={image.alt || "Casino Table"}
+                  className="transform rounded-lg brightness-90 transition will-change-auto group-hover:brightness-110"
+                  style={{ transform: "translate3d(0, 0, 0)" }}
+                  src={image.src}
+                  width={600}
+                  height={400}
+                  loading="lazy"
+                  sizes="(max-width: 640px) 100vw,
+                    (max-width: 1280px) 50vw,
+                    (max-width: 1536px) 33vw,
+                    25vw"
+                  onError={(e) => {
+                    console.log(`Image load failed for ${image.src}`);
+                    e.target.style.display = "none"; // 隱藏載入失敗的圖片
+                  }}
+                />
+                <p className="text-white text-center mt-2">{image.alt}</p>{" "}
+                {/* 顯示桌子名稱 */}
+              </button>
+            ))
+          )}
         </div>
       </main>
     </>
