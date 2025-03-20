@@ -54,9 +54,9 @@ export default async function handler(req, res) {
             },
           },
           urls: {
-            lobby: "https://ajgrillcasino.vercel.app/", // 設定返回頁面 URL
-            rngCloseButton: "https://ajgrillcasino.vercel.app/", // 設定返回頁面 URL
-            rngLobbyButton: "https://ajgrillcasino.vercel.app/", // 設定返回頁面 URL
+            lobby: "https://ajgrillcasino.vercel.app/lobby", // 設定返回頁面 URL
+            rngCloseButton: "https://ajgrillcasino.vercel.app/lobby", // 設定返回頁面 URL
+            rngLobbyButton: "https://ajgrillcasino.vercel.app/lobby", // 設定返回頁面 URL
           },
         },
       };
