@@ -80,7 +80,7 @@ async function sendMessage(chatId, text) {
 
 // 發送問卷連結
 async function sendQuestionnaire(chatId) {
-  const message = `📄 請填寫問卷：\n\n${QUESTIONNAIRE_LINK}`;
+  const message = `您好，請填寫 Questionnaire 表單供串接使用，若填寫過程有任何問題，歡迎隨時在群組提問，謝謝。\n\n${QUESTIONNAIRE_LINK}`;
   await sendMessage(chatId, message);
 }
 
