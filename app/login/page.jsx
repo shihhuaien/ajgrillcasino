@@ -43,6 +43,7 @@ const Login = () => {
           body: JSON.stringify({
             username: userName,
             password: password,
+            source: "lobby",
           }),
         });
 

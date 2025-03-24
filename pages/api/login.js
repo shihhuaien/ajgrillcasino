@@ -2,9 +2,9 @@ import { upsertPlayerData, upsertSession } from "../../lib/database";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
-    const { username, password, image } = req.body;
+    const { username, password, image, source } = req.body;
 
-    if (!username || !password || !image) {
+    if (!username || !password || !image || !source) {
       return res
         .status(400)
         .json({ success: false, message: "Missing credentials" });
@@ -61,16 +61,26 @@ export default async function handler(req, res) {
         },
       };
 
-      const authResponse = await fetch(
-        "https://diyow6.uat1.evo-test.com/ua/v1/diyow60000000001/test123",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(authPayload),
-        }
-      );
+      // 根據 source 決定 fetch 的 URL
+      let url;
+      if (source === "ow") {
+        url = "https://diyow6.uat1.evo-test.com/ua/v1/diyow60000000001/test123";
+      } else if (source === "subow") {
+        url =
+          "https://diyasmaster.uat1.evo-test.com/ua/v1/subas11ow0000001/test123";
+      } else {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid source" });
+      }
+
+      const authResponse = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(authPayload),
+      });
 
       if (!authResponse.ok) {
         throw new Error(`Failed to authenticate: ${authResponse.statusText}`);

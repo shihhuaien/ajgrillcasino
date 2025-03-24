@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const Login = ({ image, loginButtonRef }) => {
+const Login = ({ image, loginButtonRef, source }) => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [userNameError, setUserNameError] = useState("");
@@ -55,7 +55,8 @@ const Login = ({ image, loginButtonRef }) => {
         body: JSON.stringify({
           username: userName,
           password: password,
-          image, // 傳遞整個 image 物件
+          image,
+          source, // 新增 source 欄位
         }),
       });
 
@@ -74,7 +75,18 @@ const Login = ({ image, loginButtonRef }) => {
         if (data.authToken) {
           sessionStorage.setItem("authToken", data.authToken);
         }
-        router.push(`https://diyow6.uat1.evo-test.com${data.authToken}`);
+
+        let baseUrl;
+        if (source === "ow") {
+          baseUrl = "https://diyow6.uat1.evo-test.com";
+        } else if (source === "subow") {
+          baseUrl = "https://diyasmaster.uat1.evo-test.com";
+        } else {
+          // 如果 source 無效，設置默認值
+          baseUrl = "https://diyow6.uat1.evo-test.com";
+        }
+
+        router.push(`${baseUrl}${data.authToken}`);
       } else {
         alert(data.message || "登入失敗");
         setIsLoading(false);
