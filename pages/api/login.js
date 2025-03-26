@@ -53,11 +53,11 @@ export default async function handler(req, res) {
               id: image.table_id,
             },
           },
-          urls: {
-            lobby: "https://ajgrillcasino.vercel.app/lobby", // 設定返回頁面 URL
-            rngCloseButton: "https://ajgrillcasino.vercel.app/lobby", // 設定返回頁面 URL
-            rngLobbyButton: "https://ajgrillcasino.vercel.app/lobby", // 設定返回頁面 URL
-          },
+          // urls: {
+          //   lobby: "https://ajgrillcasino.vercel.app/lobby", // 設定返回頁面 URL
+          //   rngCloseButton: "https://ajgrillcasino.vercel.app/lobby", // 設定返回頁面 URL
+          //   rngLobbyButton: "https://ajgrillcasino.vercel.app/lobby", // 設定返回頁面 URL
+          // },
         },
       };
 
