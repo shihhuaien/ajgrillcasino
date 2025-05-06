@@ -26,6 +26,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "static.egcdn.com", // 允許 Evolution 測試環境的所有子域名
       },
+      {
+        protocol: "https",
+        hostname: "bshots.egcvi.com", // ✅ 加上這一行
+      },
     ],
   },
 };
