@@ -56,7 +56,7 @@ const Login = ({ image, loginButtonRef, source }) => {
           username: userName,
           password: password,
           image,
-          source, // 新增 source 欄位
+          source,
         }),
       });
 

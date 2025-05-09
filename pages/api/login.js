@@ -68,6 +68,7 @@ export default async function handler(req, res) {
       } else if (source === "subow") {
         url =
           "https://diyasmaster.uat1.evo-test.com/ua/v1/subas11ow0000001/test123";
+        console.log(url);
       } else {
         return res
           .status(400)
