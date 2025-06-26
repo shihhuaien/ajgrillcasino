@@ -49,9 +49,9 @@ export default async function handler(req, res) {
           game: {
             category: image.gameTypeCode,
             interface: "view1",
-            table: {
-              id: image.table_id,
-            },
+            // table: {
+            //   id: image.table_id,
+            // },
           },
           urls: {
             lobby: "https://ajgrillcasino.vercel.app/lobby", // 設定返回頁面 URL
