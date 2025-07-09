@@ -4,6 +4,44 @@ const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const QUESTIONNAIRE_LINK =
   "https://docs.google.com/spreadsheets/d/1RCPZDEmz1xotlvCyAqg1sz5JKtg-PorwboY4NqRKbD8/edit?gid=243266798#gid=243266798";
 
+// 新增函數：設定命令選單
+async function setBotCommands() {
+  if (!TOKEN) {
+    console.error("❌ TELEGRAM_BOT_TOKEN 未設置");
+    return;
+  }
+
+  const url = `https://api.telegram.org/bot${TOKEN}/setMyCommands`;
+  const commands = [
+    { command: "start", description: "開始使用機器人" },
+    { command: "help", description: "查看指令列表" },
+    { command: "echo", description: "回覆相同訊息" },
+    { command: "random", description: "隨機數字" },
+    { command: "photo", description: "發送圖片" },
+    { command: "buttons", description: "顯示按鈕" },
+    { command: "questionnaire", description: "發送問卷連結（僅限群組）" },
+  ];
+  const payload = {
+    commands: JSON.stringify(commands),
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const result = await response.json();
+    if (result.ok) {
+      console.log("✅ 命令選單設定成功");
+    } else {
+      console.error("❌ 無法設定命令選單:", result.description);
+    }
+  } catch (error) {
+    console.error("❌ 設定命令選單時發生錯誤:", error);
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Only POST requests are allowed" });
@@ -11,6 +49,12 @@ export default async function handler(req, res) {
 
   console.log("🔍 收到請求:", req.body);
   const body = req.body;
+
+  // 在收到第一個請求時設定命令選單（僅執行一次）
+  if (body.message && !global.commandsSet) {
+    await setBotCommands();
+    global.commandsSet = true; // 避免重複設定
+  }
 
   if (!body.message) {
     return res.status(200).json({ status: "No message found" });
@@ -40,7 +84,8 @@ export default async function handler(req, res) {
         "/echo <message> - 回覆相同訊息\n" +
         "/random - 隨機數字\n" +
         "/photo - 發送圖片\n" +
-        "/buttons - 顯示按鈕"
+        "/buttons - 顯示按鈕\n" +
+        "/questionnaire - 發送問卷連結（僅限群組）"
     );
   } else if (messageText.startsWith("/echo ")) {
     const reply = messageText.replace("/echo ", "");
@@ -89,7 +134,7 @@ async function sendPhoto(chatId) {
   const url = `https://api.telegram.org/bot${TOKEN}/sendPhoto`;
   const payload = {
     chat_id: chatId,
-    photo: "https://source.unsplash.com/random/600x400", // 使用 Unsplash 隨機圖片
+    photo: "https://source.unsplash.com/random/600x400",
     caption: "📷 這是一張隨機圖片",
   };
 
