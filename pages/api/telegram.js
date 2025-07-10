@@ -4,14 +4,15 @@ const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const QUESTIONNAIRE_LINK =
   "https://docs.google.com/spreadsheets/d/1RCPZDEmz1xotlvCyAqg1sz5JKtg-PorwboY4NqRKbD8/edit?gid=243266798#gid=243266798";
 
-// 新增函數：設定命令選單
-async function setBotCommands() {
+// 新增函數：設定命令選單及主選單按鈕
+async function setBotCommandsAndMenuButton() {
   if (!TOKEN) {
     console.error("❌ TELEGRAM_BOT_TOKEN 未設置");
     return;
   }
 
-  const url = `https://api.telegram.org/bot${TOKEN}/setMyCommands`;
+  // --- 設定命令選單 ---
+  const setCommandsUrl = `https://api.telegram.org/bot${TOKEN}/setMyCommands`;
   const commands = [
     { command: "start", description: "開始使用機器人" },
     { command: "help", description: "查看指令列表" },
@@ -21,15 +22,15 @@ async function setBotCommands() {
     { command: "buttons", description: "顯示按鈕" },
     { command: "questionnaire", description: "發送問卷連結（僅限群組）" },
   ];
-  const payload = {
+  const commandsPayload = {
     commands: JSON.stringify(commands),
   };
 
   try {
-    const response = await fetch(url, {
+    const response = await fetch(setCommandsUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(commandsPayload),
     });
     const result = await response.json();
     if (result.ok) {
@@ -39,6 +40,32 @@ async function setBotCommands() {
     }
   } catch (error) {
     console.error("❌ 設定命令選單時發生錯誤:", error);
+  }
+
+  // --- 設定主選單按鈕 (MenuButton) ---
+  // 這裡我們將選單按鈕設定為顯示命令列表 (type: 'commands')
+  const setMenuButtonUrl = `https://api.telegram.org/bot${TOKEN}/setChatMenuButton`;
+  const menuButtonPayload = {
+    // 如果不指定 chat_id，將設定為機器人在所有私聊中的預設選單按鈕
+    menu_button: {
+      type: "commands", // 設定為顯示命令列表
+    },
+  };
+
+  try {
+    const response = await fetch(setMenuButtonUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(menuButtonPayload),
+    });
+    const result = await response.json();
+    if (result.ok) {
+      console.log("✅ 選單按鈕設定成功 (Commands)");
+    } else {
+      console.error("❌ 無法設定選單按鈕:", result.description);
+    }
+  } catch (error) {
+    console.error("❌ 設定選單按鈕時發生錯誤:", error);
   }
 }
 
@@ -50,10 +77,10 @@ export default async function handler(req, res) {
   console.log("🔍 收到請求:", req.body);
   const body = req.body;
 
-  // 在收到第一個請求時設定命令選單（僅執行一次）
-  if (body.message && !global.commandsSet) {
-    await setBotCommands();
-    global.commandsSet = true; // 避免重複設定
+  // 在收到第一個請求時設定命令選單及主選單按鈕（僅執行一次）
+  if (body.message && !global.commandsAndMenuButtonSet) {
+    await setBotCommandsAndMenuButton(); // 調用新的函數
+    global.commandsAndMenuButtonSet = true; // 避免重複設定
   }
 
   if (!body.message) {
@@ -172,6 +199,7 @@ async function sendButtons(chatId) {
       body: JSON.stringify(payload),
     });
     if (!response.ok) console.error("❌ 無法發送按鈕:", await response.text());
+    // 處理 callback_data 的邏輯應該在 handler 中根據 update.callback_query 處理
   } catch (error) {
     console.error("❌ 發送按鈕時發生錯誤:", error);
   }
