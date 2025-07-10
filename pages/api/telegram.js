@@ -14,7 +14,7 @@ async function setBotCommandsAndMenuButton() {
   // --- 設定命令選單 ---
   const setCommandsUrl = `https://api.telegram.org/bot${TOKEN}/setMyCommands`;
   const commands = [
-    { command: "start", description: "開始使用" },
+    { command: "start", description: "開始使用機器人" },
     { command: "help", description: "查看指令列表" },
     { command: "echo", description: "回覆相同訊息" },
     { command: "random", description: "隨機數字" },
@@ -43,13 +43,11 @@ async function setBotCommandsAndMenuButton() {
   }
 
   // --- 設定主選單按鈕 (MenuButton) ---
-  // 這裡我們將選單按鈕設定為顯示命令列表 (type: 'commands')
   const setMenuButtonUrl = `https://api.telegram.org/bot${TOKEN}/setChatMenuButton`;
+  // **修正這裡的 payload 結構**
+  // 當不指定 chat_id 時，直接傳遞 MenuButton 物件
   const menuButtonPayload = {
-    // 如果不指定 chat_id，將設定為機器人在所有私聊中的預設選單按鈕
-    menu_button: {
-      type: "commands", // 設定為顯示命令列表
-    },
+    type: "commands", // 直接是 MenuButtonCommands 物件
   };
 
   try {
@@ -63,6 +61,8 @@ async function setBotCommandsAndMenuButton() {
       console.log("✅ 選單按鈕設定成功 (Commands)");
     } else {
       console.error("❌ 無法設定選單按鈕:", result.description);
+      // 注意：這也可能因為您在群組中測試，而如前所述，MenuButton 主要影響私聊。
+      // 但修正 payload 結構會先解決 Bad Request 的問題。
     }
   } catch (error) {
     console.error("❌ 設定選單按鈕時發生錯誤:", error);
@@ -74,58 +74,96 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Only POST requests are allowed" });
   }
 
-  console.log("🔍 收到請求:", req.body);
+  console.log("🔍 收到請求:", JSON.stringify(req.body, null, 2)); // 使用 JSON.stringify 格式化輸出
   const body = req.body;
 
-  // 在收到第一個請求時設定命令選單及主選單按鈕（僅執行一次）
+  // 在收到第一個訊息相關的請求時設定命令選單及主選單按鈕（僅執行一次）
+  // 檢查 body.message 是否存在，因為有些更新類型 (如 callback_query) 沒有 message 字段
   if (body.message && !global.commandsAndMenuButtonSet) {
-    await setBotCommandsAndMenuButton(); // 調用新的函數
+    await setBotCommandsAndMenuButton();
     global.commandsAndMenuButtonSet = true; // 避免重複設定
   }
 
+  // 處理非文字訊息更新，例如成員加入/離開，或沒有 message 字段的更新
   if (!body.message) {
-    return res.status(200).json({ status: "No message found" });
+    // 這裡可以處理其他類型的更新，例如 callback_query, inline_query 等
+    if (body.callback_query) {
+      console.log("🔍 收到 Callback Query:", body.callback_query.data);
+      // 這裡可以添加處理按鈕回調的邏輯
+      const chatId = body.callback_query.message.chat.id;
+      const callbackData = body.callback_query.data;
+
+      if (callbackData === "random") {
+        const randomNum = Math.floor(Math.random() * 100) + 1;
+        await sendMessage(chatId, `🎲 你的隨機數字是: ${randomNum}`);
+      } else if (callbackData === "photo") {
+        await sendPhoto(chatId);
+      }
+      // 回應 callback_query 以消除 loading 狀態 (可選)
+      await answerCallbackQuery(body.callback_query.id);
+    } else {
+      console.log("ℹ️ 收到非訊息更新或沒有 message 字段的更新:", body);
+    }
+    return res
+      .status(200)
+      .json({ status: "No message found or other update type" });
   }
 
   const chatId = body.message.chat.id;
-  const messageText = body.message.text;
+  const messageText = body.message.text; // 這可能是 undefined，如果不是文字訊息
 
-  console.log("📩 收到 Telegram 訊息:", messageText);
+  // **修正這裡的邏輯：只有當 messageText 存在時才進行指令處理**
+  if (messageText) {
+    console.log("📩 收到 Telegram 訊息:", messageText);
 
-  const isGroup =
-    body.message.chat.type === "group" ||
-    body.message.chat.type === "supergroup";
+    const isGroup =
+      body.message.chat.type === "group" ||
+      body.message.chat.type === "supergroup";
 
-  // 根據不同的指令執行對應動作
-  if (messageText === "/start") {
-    await sendMessage(
-      chatId,
-      "🤖 歡迎使用 Telegram ！請輸入 /help 查看指令列表。"
+    // 根據不同的指令執行對應動作
+    if (messageText === "/start") {
+      await sendMessage(
+        chatId,
+        "🤖 歡迎使用 Telegram 機器人！請輸入 /help 查看指令列表。"
+      );
+    } else if (messageText === "/help") {
+      await sendMessage(
+        chatId,
+        "📖 機器人支援的指令：\n" +
+          "/start - 開始使用機器人\n" +
+          "/help - 查看指令列表\n" +
+          "/echo <message> - 回覆相同訊息\n" +
+          "/random - 隨機數字\n" +
+          "/photo - 發送圖片\n" +
+          "/buttons - 顯示按鈕\n" +
+          "/questionnaire - 發送問卷連結（僅限群組）"
+      );
+    } else if (messageText.startsWith("/echo ")) {
+      const reply = messageText.replace("/echo ", "");
+      await sendMessage(chatId, `🔁 你說: ${reply}`);
+    } else if (messageText === "/random") {
+      const randomNum = Math.floor(Math.random() * 100) + 1;
+      await sendMessage(chatId, `🎲 你的隨機數字是: ${randomNum}`);
+    } else if (messageText === "/photo") {
+      await sendPhoto(chatId);
+    } else if (messageText === "/buttons") {
+      await sendButtons(chatId);
+    } else if (messageText === "/questionnaire" && isGroup) {
+      await sendQuestionnaire(chatId);
+    } else {
+      // 處理其他未能識別的文字訊息
+      console.log("ℹ️ 收到未識別的文字訊息:", messageText);
+      await sendMessage(
+        chatId,
+        "😕 抱歉，我不太明白您的意思。請輸入 /help 查看指令列表。"
+      );
+    }
+  } else {
+    // 處理其他類型的 message 更新，例如圖片、語音、或您日誌中看到的 left_chat_member
+    console.log(
+      "ℹ️ 收到非文字訊息的 message 更新，不進行文字指令處理:",
+      body.message
     );
-  } else if (messageText === "/help") {
-    await sendMessage(
-      chatId,
-      "📖 機器人支援的指令：\n" +
-        "/start - 開始使用\n" +
-        "/help - 查看指令列表\n" +
-        "/echo <message> - 回覆相同訊息\n" +
-        "/random - 隨機數字\n" +
-        "/photo - 發送圖片\n" +
-        "/buttons - 顯示按鈕\n" +
-        "/questionnaire - 發送問卷連結（僅限群組）"
-    );
-  } else if (messageText.startsWith("/echo ")) {
-    const reply = messageText.replace("/echo ", "");
-    await sendMessage(chatId, `🔁 你說: ${reply}`);
-  } else if (messageText === "/random") {
-    const randomNum = Math.floor(Math.random() * 100) + 1;
-    await sendMessage(chatId, `🎲 你的隨機數字是: ${randomNum}`);
-  } else if (messageText === "/photo") {
-    await sendPhoto(chatId);
-  } else if (messageText === "/buttons") {
-    await sendButtons(chatId);
-  } else if (messageText === "/questionnaire" && isGroup) {
-    await sendQuestionnaire(chatId);
   }
 
   res.status(200).json({ status: "Message processed" });
@@ -177,7 +215,7 @@ async function sendPhoto(chatId) {
   }
 }
 
-// 發送按鈕
+// 發送按鈕 (Inline Keyboard)
 async function sendButtons(chatId) {
   const url = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
   const payload = {
@@ -199,8 +237,27 @@ async function sendButtons(chatId) {
       body: JSON.stringify(payload),
     });
     if (!response.ok) console.error("❌ 無法發送按鈕:", await response.text());
-    // 處理 callback_data 的邏輯應該在 handler 中根據 update.callback_query 處理
   } catch (error) {
     console.error("❌ 發送按鈕時發生錯誤:", error);
+  }
+}
+
+// 新增：回覆 Callback Query，避免按鈕點擊後一直轉圈
+async function answerCallbackQuery(callbackQueryId) {
+  if (!TOKEN) return console.error("❌ TELEGRAM_BOT_TOKEN 未設置");
+
+  const url = `https://api.telegram.org/bot${TOKEN}/answerCallbackQuery`;
+  const payload = { callback_query_id: callbackQueryId };
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok)
+      console.error("❌ 無法回覆 Callback Query:", await response.text());
+  } catch (error) {
+    console.error("❌ 回覆 Callback Query 時發生錯誤:", error);
   }
 }
