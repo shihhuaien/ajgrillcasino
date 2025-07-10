@@ -14,7 +14,7 @@ async function setBotCommandsAndMenuButton() {
   // --- 設定命令選單 ---
   const setCommandsUrl = `https://api.telegram.org/bot${TOKEN}/setMyCommands`;
   const commands = [
-    { command: "start", description: "開始使用機器人" },
+    { command: "start", description: "開始使用" },
     { command: "help", description: "查看指令列表" },
     { command: "echo", description: "回覆相同訊息" },
     { command: "random", description: "隨機數字" },
