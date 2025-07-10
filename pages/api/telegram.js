@@ -106,7 +106,7 @@ export default async function handler(req, res) {
     await sendMessage(
       chatId,
       "📖 機器人支援的指令：\n" +
-        "/start - 開始使用機器人\n" +
+        "/start - 開始使用\n" +
         "/help - 查看指令列表\n" +
         "/echo <message> - 回覆相同訊息\n" +
         "/random - 隨機數字\n" +
