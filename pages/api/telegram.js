@@ -48,7 +48,7 @@ async function setBotCommandsAndMenuButton() {
   const menuButtonPayload = {
     // 如果不指定 chat_id，將設定為機器人在所有私聊中的預設選單按鈕
     menu_button: {
-      type: "default", // 設定為顯示命令列表
+      type: "Commands", // 設定為顯示命令列表
     },
   };
 
@@ -100,7 +100,7 @@ export default async function handler(req, res) {
   if (messageText === "/start") {
     await sendMessage(
       chatId,
-      "🤖 歡迎使用 Telegram 機器人！請輸入 /help 查看指令列表。"
+      "🤖 歡迎使用 Telegram ！請輸入 /help 查看指令列表。"
     );
   } else if (messageText === "/help") {
     await sendMessage(
