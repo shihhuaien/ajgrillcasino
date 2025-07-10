@@ -48,7 +48,7 @@ async function setBotCommandsAndMenuButton() {
   const menuButtonPayload = {
     // 如果不指定 chat_id，將設定為機器人在所有私聊中的預設選單按鈕
     menu_button: {
-      type: "Commands", // 設定為顯示命令列表
+      type: "commands", // 設定為顯示命令列表
     },
   };
 
