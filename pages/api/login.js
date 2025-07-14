@@ -43,7 +43,7 @@ export default async function handler(req, res) {
         },
         config: {
           brand: {
-            id: "1",
+            id: "2",
             skin: "1",
           },
           game: {
