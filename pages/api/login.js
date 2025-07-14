@@ -31,7 +31,7 @@ export default async function handler(req, res) {
           id: username,
           update: true,
           nickname: username,
-          language: "en-GB",
+          language: "zh-Hant",
           currency: "USD",
           session: {
             id: `session-${username}`,
