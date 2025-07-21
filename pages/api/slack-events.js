@@ -9,7 +9,8 @@ let channelMappings = [
   },
   {
     slack_channel_id: "C097BCSDJ72",
-    teams_webhook_url: "https://teams-webhook-url-for-B",
+    teams_webhook_url:
+      "https://evolutiongaming.webhook.office.com/webhookb2/e6600a48-790a-4ef3-b54c-e8d484e4789f@76590ac1-34fa-4242-9092-d69b5e4ca942/IncomingWebhook/b9e83885448c49858500ed9d9a557b7c/9f59ab36-eb73-4d16-9b4e-06ea1aae9cb6/V229daaMsoXifnCN1yOnK5gAkhjG7ZSwkfCsCLnA9o8EE1",
   },
 ];
 
