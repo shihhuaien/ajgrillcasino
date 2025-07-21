@@ -1,14 +1,17 @@
 // pages/api/slack-events.js
 
 // 解析環境變數中的 JSON 映射
-let channelMappings = [];
-try {
-  if (process.env.CHANNEL_MAPPINGS) {
-    channelMappings = JSON.parse(process.env.CHANNEL_MAPPINGS);
-  }
-} catch (e) {
-  console.error("Error parsing CHANNEL_MAPPINGS environment variable:", e);
-}
+let channelMappings = [
+  {
+    slack_channel_id: "C0969BRTRRS",
+    teams_webhook_url:
+      "https://evolutiongaming.webhook.office.com/webhookb2/e6600a48-790a-4ef3-b54c-e8d484e4789f@76590ac1-34fa-4242-9092-d69b5e4ca942/IncomingWebhook/a576c013ccb2491d8a572836373913fa/9f59ab36-eb73-4d16-9b4e-06ea1aae9cb6/V2d9ZVaEkaj05vErxDT_X-JfwOLw13I0kQxirtBT-PTkM1",
+  },
+  {
+    slack_channel_id: "C097BCSDJ72",
+    teams_webhook_url: "https://teams-webhook-url-for-B",
+  },
+];
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
