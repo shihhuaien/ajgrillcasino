@@ -1,5 +1,15 @@
 // pages/api/slack-events.js
 
+// 解析環境變數中的 JSON 映射
+let channelMappings = [];
+try {
+  if (process.env.CHANNEL_MAPPINGS) {
+    channelMappings = JSON.parse(process.env.CHANNEL_MAPPINGS);
+  }
+} catch (e) {
+  console.error("Error parsing CHANNEL_MAPPINGS environment variable:", e);
+}
+
 export default async function handler(req, res) {
   if (req.method === "POST") {
     const { challenge, event, type } = req.body;
@@ -18,18 +28,18 @@ export default async function handler(req, res) {
 
       const { user, text, channel } = event;
 
-      // 檢查是否是特定頻道
-      // 你需要替換 'YOUR_SLACK_CHANNEL_ID' 為你想要同步的 Slack 頻道 ID
-      // 你可以在 Slack 桌面版中，右鍵點擊頻道名稱 -> "Copy link" 來找到頻道 ID (Cxxxxxxxxxx)
-      const targetSlackChannelId = "C0969BRTRRS";
+      // 尋找匹配的映射
+      const mapping = channelMappings.find(
+        (m) => m.slack_channel_id === channel
+      );
 
-      if (channel === targetSlackChannelId) {
+      if (mapping) {
         console.log(
           `Received message from Slack channel ${channel}: ${text} by user ${user}`
         );
 
-        // 在這裡將訊息發送到 Microsoft Teams
-        await sendToTeams(user, text, channel);
+        // 在這裡將訊息發送到 Microsoft Teams，並傳遞對應的 webhook URL
+        await sendToTeams(user, text, channel, mapping.teams_webhook_url);
 
         return res.status(200).send("Message processed.");
       } else {
@@ -44,10 +54,15 @@ export default async function handler(req, res) {
   }
 }
 
-async function sendToTeams(slackUser, messageText, slackChannel) {
-  const teamsWebhookUrl = process.env.TEAMS_WEBHOOK_URL;
+// sendToTeams 函數現在接受一個 webhookUrl 參數
+async function sendToTeams(
+  slackUser,
+  messageText,
+  slackChannel,
+  teamsWebhookUrl
+) {
   if (!teamsWebhookUrl) {
-    console.error("TEAMS_WEBHOOK_URL is not set.");
+    console.error("Teams Webhook URL is not set for this mapping.");
     return;
   }
 
