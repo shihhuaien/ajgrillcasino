@@ -12,6 +12,11 @@ let channelMappings = [
     teams_webhook_url:
       "https://evolutiongaming.webhook.office.com/webhookb2/e6600a48-790a-4ef3-b54c-e8d484e4789f@76590ac1-34fa-4242-9092-d69b5e4ca942/IncomingWebhook/b9e83885448c49858500ed9d9a557b7c/9f59ab36-eb73-4d16-9b4e-06ea1aae9cb6/V229daaMsoXifnCN1yOnK5gAkhjG7ZSwkfCsCLnA9o8EE1",
   },
+  {
+    slack_channel_id: "G01GD5DH3LP",
+    teams_webhook_url:
+      "https://evolutiongaming.webhook.office.com/webhookb2/e6600a48-790a-4ef3-b54c-e8d484e4789f@76590ac1-34fa-4242-9092-d69b5e4ca942/IncomingWebhook/368d2e6142b34205ad5195298fa37f68/9f59ab36-eb73-4d16-9b4e-06ea1aae9cb6/V2wXDQVqAqkku_7x-OicSqgopWJSd2VhDbvxjRN-z7ei81",
+  },
 ];
 
 export default async function handler(req, res) {
@@ -81,8 +86,8 @@ async function sendToTeams(
     summary: "Slack Message",
     sections: [
       {
-        activityTitle: `來自 Slack 頻道訊息`,
-        activitySubtitle: `#${slackChannel}`, // 實際應顯示頻道名稱
+        // activityTitle: `來自 Slack 頻道訊息`,
+        // activitySubtitle: `#${slackChannel}`, // 實際應顯示頻道名稱
         activityText: `**<@${slackUser}>**: ${messageText}`, // 實際應顯示用戶名稱
         markdown: true,
       },
