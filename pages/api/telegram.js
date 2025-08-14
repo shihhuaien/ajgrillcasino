@@ -129,7 +129,7 @@ export default async function handler(req, res) {
           "/menu - 顯示常用選單\n" + // 新增幫助訊息
           "/questionnaire - 發送問卷連結（僅限群組）"
       );
-    } else if (messageText.startsWith("/echo ")) {
+    } else if (messageText.startsWith("/echo@Evolution_Tim_Bot")) {
       const reply = messageText.replace("/echo ", "");
       await sendMessage(chatId, `🔁 你說: ${reply}`);
     } else if (messageText === "/random") {
