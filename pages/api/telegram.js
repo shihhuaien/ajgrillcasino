@@ -335,7 +335,7 @@ async function sendMiniAppInlineButton(chatId) {
         [
           {
             text: "Open App",
-            web_app: { url: "https://<你的網域>/miniapp" },
+            web_app: { url: "https://ajgrillcasino.vercel.app/miniapp" },
           },
         ],
       ],
@@ -360,7 +360,7 @@ async function sendReplyKeyboardWithMiniApp(chatId) {
       [
         {
           text: "Open Mini App",
-          web_app: { url: "https://<你的網域>/miniapp" },
+          web_app: { url: "https://ajgrillcasino.vercel.app/miniapp" },
         },
       ],
       [{ text: "隱藏選單" }],
