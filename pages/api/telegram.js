@@ -46,7 +46,9 @@ async function setBotCommandsAndMenuButton() {
   // --- 設定主選單按鈕 (MenuButton) ---
   const setMenuButtonUrl = `https://api.telegram.org/bot${TOKEN}/setChatMenuButton`;
   const menuButtonPayload = {
-    type: "commands",
+    type: "web_app",
+    text: "Open Mini App",
+    web_app: { url: "https://ajgrillcasino.vercel.app/miniapp" },
   };
 
   try {
@@ -137,13 +139,13 @@ export default async function handler(req, res) {
       await sendMessage(chatId, `🎲 你的隨機數字是: ${randomNum}`);
     } else if (messageText === "/photo") {
       await sendPhoto(chatId);
-    } else if (messageText === "/buttons") {
-      await sendInlineButtons(chatId); // 呼叫更名後的函數
+    } else if (messageText === "/miniapp") {
+      await sendMiniAppInlineButton(chatId);
     } else if (messageText === "/questionnaire" && isGroup) {
       await sendQuestionnaire(chatId);
     } else if (messageText === "/menu") {
       // 處理新命令
-      await sendReplyKeyboard(chatId);
+      await sendReplyKeyboardWithMiniApp(chatId);
     } else if (messageText === "隨機數字") {
       // 處理 Reply Keyboard 按鈕點擊
       const randomNum = Math.floor(Math.random() * 100) + 1;
@@ -297,4 +299,50 @@ async function answerCallbackQuery(callbackQueryId) {
   } catch (error) {
     console.error("❌ 回覆 Callback Query 時發生錯誤:", error);
   }
+}
+
+async function sendMiniAppInlineButton(chatId) {
+  const url = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
+  const payload = {
+    chat_id: chatId,
+    text: "🚀 打開 Mini App",
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: "Open App",
+            web_app: { url: "https://<你的網域>/miniapp" },
+          },
+        ],
+      ],
+    },
+  };
+  try {
+    const resp = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!resp.ok)
+      console.error("❌ 無法發送 Mini App 內聯按鈕:", await resp.text());
+  } catch (e) {
+    console.error("❌ 發送 Mini App 內聯按鈕時發生錯誤:", e);
+  }
+}
+
+async function sendReplyKeyboardWithMiniApp(chatId) {
+  const replyKeyboard = {
+    keyboard: [
+      [
+        {
+          text: "Open Mini App",
+          web_app: { url: "https://<你的網域>/miniapp" },
+        },
+      ],
+      [{ text: "隱藏選單" }],
+    ],
+    resize_keyboard: true,
+    one_time_keyboard: false,
+  };
+  await sendMessage(chatId, "請選擇操作：", replyKeyboard);
 }
