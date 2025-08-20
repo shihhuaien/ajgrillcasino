@@ -102,6 +102,30 @@ export default async function handler(req, res) {
       .json({ status: "No message found or other update type" });
   }
 
+  // ✅ 先處理 Mini App 的 sendData（僅 Reply Keyboard 開啟時會收到）
+  if (body.message?.web_app_data?.data) {
+    const chatId = body.message.chat.id;
+    const raw = body.message.web_app_data.data; // 這是前端 tg.sendData(...) 的字串
+
+    // (可選) 嘗試 JSON 解析，兼容純字串
+    let parsed = null;
+    try {
+      parsed = JSON.parse(raw);
+    } catch {}
+
+    // 你可以在這裡把資料丟到 DB / 你的後端邏輯
+    // 例如：await saveMiniAppPayload(chatId, parsed ?? raw);
+
+    await sendMessage(
+      chatId,
+      `✅ 已收到 Mini App 資料：\n` +
+        (parsed ? "```json\n" + JSON.stringify(parsed, null, 2) + "\n```" : raw)
+    );
+
+    // ⭐ 這很重要：處理完就結束，避免落入文字指令分支
+    return res.status(200).json({ status: "web_app_data processed" });
+  }
+
   const chatId = body.message.chat.id;
   const messageText = body.message.text;
 

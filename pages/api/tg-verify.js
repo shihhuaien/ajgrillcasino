@@ -67,3 +67,17 @@ export default async function handler(req, res) {
     return res.status(500).json({ valid: false, error: "Internal error" });
   }
 }
+
+await fetch(`https://api.telegram.org/bot${TOKEN}/answerWebAppQuery`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    web_app_query_id: queryId,
+    result: {
+      type: "article",
+      id: "ok",
+      title: "完成",
+      input_message_content: { message_text: "你的操作已完成 ✅" },
+    },
+  }),
+});
