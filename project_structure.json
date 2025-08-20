@@ -1,0 +1,98 @@
+{
+  "project_name": "aj_grill_casino",
+  "structure": {
+    "app": {
+      "dashboard": {
+        "page.jsx": "file"
+      },
+      "favicon.ico": "file",
+      "fonts": {
+        "GeistMonoVF.woff": "file",
+        "GeistVF.woff": "file"
+      },
+      "globals.css": "file",
+      "layout.js": "file",
+      "lobby": {
+        "page.jsx": "file"
+      },
+      "login": {
+        "page.jsx": "file"
+      },
+      "page.js": "file",
+      "subow": {
+        "page.jsx": "file"
+      }
+    },
+    "components": {
+      "Approach.jsx": "file",
+      "Icons": {
+        "Bridge.jsx": "file"
+      },
+      "LoginForm.jsx": "file",
+      "Modal.jsx": "file"
+    },
+    "Dockerfile": "file",
+    "fly.toml": "file",
+    "jsconfig.json": "file",
+    "lib": {
+      "database.js": "file",
+      "database.sqlite": "file",
+      "supabase.js": "file",
+      "table.js": "file"
+    },
+    "next.config.mjs": "file",
+    "package-lock.json": "file",
+    "package.json": "file",
+    "pages": {
+      "api": {
+        "balance.js": "file",
+        "cancel.js": "file",
+        "check.js": "file",
+        "credit.js": "file",
+        "debit.js": "file",
+        "gamehistory.js": "file",
+        "login.js": "file",
+        "promo_payout.js": "file",
+        "sid.js": "file",
+        "slack-events.js": "file",
+        "tables.js": "file",
+        "telegram.js": "file"
+      }
+    },
+    "postcss.config.mjs": "file",
+    "public": {
+      "evolution_leaves_rgb.png": "file",
+      "file.svg": "file",
+      "globe.svg": "file",
+      "images": {
+        "photo.png": "file",
+        "photo0.png": "file",
+        "photo1.png": "file",
+        "photo2.png": "file",
+        "photo3.png": "file"
+      },
+      "next.svg": "file",
+      "onboarding-img.png": "file",
+      "platinum_prive_blackjack_banner_video_15_sec_2024_11.mp4": "file",
+      "vercel.svg": "file",
+      "window.svg": "file"
+    },
+    "README.md": "file",
+    "tailwind.config.js": "file",
+    "test": {
+      "testCreateConnection.js": "file",
+      "testDeleteConnection.js": "file",
+      "testReadConnection.js": "file",
+      "testSupabaseConnection.js": "file",
+      "testUpdateConnection.js": "file"
+    }
+  },
+  "metadata": {
+    "total_files": 45,
+    "total_directories": 12,
+    "framework": "Next.js",
+    "styling": "Tailwind CSS",
+    "database": "SQLite + Supabase",
+    "deployment": "Fly.io"
+  }
+}
