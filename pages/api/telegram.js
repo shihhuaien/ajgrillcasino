@@ -53,7 +53,7 @@ async function setBotCommandsAndMenuButton() {
 
   const requestBody = {
     menu_button: menuButtonPayload,
-    chat_id: "-4684201289",
+    // 文件上寫僅支援私人聊天，chat_id: "-4684201289",
   };
 
   try {
