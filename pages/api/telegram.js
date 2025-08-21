@@ -43,13 +43,13 @@ async function setBotCommandsAndMenuButton() {
     console.error("❌ 設定命令選單時發生錯誤:", error);
   }
 
-  // --- 設定主選單按鈕 (MenuButton) ---
-  const setMenuButtonUrl = `https://api.telegram.org/bot${TOKEN}/setChatMenuButton`;
-  const menuButtonPayload = {
-    type: "web_app",
-    text: "Open Mini App",
-    web_app: { url: "https://ajgrillcasino.vercel.app/miniapp" },
-  };
+  // // --- 設定主選單按鈕 (MenuButton) ---
+  // const setMenuButtonUrl = `https://api.telegram.org/bot${TOKEN}/setChatMenuButton`;
+  // const menuButtonPayload = {
+  //   type: "web_app",
+  //   text: "Open Mini App",
+  //   web_app: { url: "https://ajgrillcasino.vercel.app/miniapp" },
+  // };
 
   try {
     const response = await fetch(setMenuButtonUrl, {
