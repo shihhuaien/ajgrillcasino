@@ -51,11 +51,16 @@ async function setBotCommandsAndMenuButton() {
     web_app: { url: "https://ajgrillcasino.vercel.app/miniapp" },
   };
 
+  const requestBody = {
+    menu_button: menuButtonPayload,
+    chat_id: "-4684201289",
+  };
+
   try {
     const response = await fetch(setMenuButtonUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(menuButtonPayload),
+      body: JSON.stringify(requestBody),
     });
     const result = await response.json();
     if (result.ok) {
